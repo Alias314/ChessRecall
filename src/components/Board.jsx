@@ -1,7 +1,7 @@
 import { files, ranks, initialBoard } from "./chessData";
 import { useEffect, useState } from "react";
 import { isValidPawnMove, isValidRookMove, isValidKnightMove, isValidBishopMove, isValidQueenMove, isValidKingMove } from "./PieceMoveLogic";
-import Square from "./square";
+import Square from "./Square";
 
 export default function Board() {
     const [board, setBoard] = useState(initialBoard);
@@ -42,6 +42,7 @@ export default function Board() {
             }
         }
 
+        setMoveHistory(prevMoveHistory => [ ...prevMoveHistory, `${piece[0].toUpperCase()}${to}`])
         setBoard(prevBoard => {
             const nextBoard = { ...prevBoard };
             nextBoard[to] = nextBoard[from];
@@ -60,27 +61,42 @@ export default function Board() {
 
     return (
         <div>
-            <div className="grid grid-cols-8">
-                {ranks.map((rank, i) =>
-                    files.map((file, j) => {
-                        const coordinate = file + rank;
-                        const isDarkSquare = (i + j) % 2 === 1;
-                        const piece = board[coordinate] || null;
-                        const isHighlighted = validMoves.includes(coordinate);
+            <div className="flex gap-10">
+                <div className="grid grid-cols-8">
+                    {ranks.map((rank, i) =>
+                        files.map((file, j) => {
+                            const coordinate = file + rank;
+                            const isDarkSquare = (i + j) % 2 === 1;
+                            const piece = board[coordinate] || null;
+                            const isHighlighted = validMoves.includes(coordinate);
 
-                        return (
-                            <Square 
-                                key={coordinate}
-                                coordinate={coordinate}
-                                isDarkSquare={isDarkSquare}
-                                piece={piece}
-                                movePiece={movePiece}
-                                setValidMoves={setValidMoves}
-                                isHighlighted={isHighlighted}
-                            />
-                        )
-                    })
-                )}
+                            return (
+                                <Square 
+                                    key={coordinate}
+                                    coordinate={coordinate}
+                                    isDarkSquare={isDarkSquare}
+                                    piece={piece}
+                                    movePiece={movePiece}
+                                    setValidMoves={setValidMoves}
+                                    isHighlighted={isHighlighted}
+                                    board={board}
+                                />
+                            )
+                        })
+                    )}
+                </div>
+                <div className="flex flex-col">
+                    <h1 className="text-2xl">Move History</h1>
+                    <div className="grid grid-cols-2 gap-2">
+                        {moveHistory.map(move => {
+                            return (
+                                <div>
+                                    {move}
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
             </div>
             <button
                 onClick={resetBoard}

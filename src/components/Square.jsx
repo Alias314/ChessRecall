@@ -1,7 +1,7 @@
 import { useDrop } from "react-dnd";
 import Piece from "./Piece";
 
-export default function Square({ coordinate, isDarkSquare, piece, movePiece, setValidMoves, isHighlighted }) {
+export default function Square({ coordinate, isDarkSquare, piece, movePiece, setValidMoves, isHighlighted, board }) {
     const [{ isDropping }, drop] = useDrop(() => ({
         accept: 'Piece',
         drop: (item) => movePiece(item.from, coordinate, item.piece),
@@ -29,6 +29,7 @@ export default function Square({ coordinate, isDarkSquare, piece, movePiece, set
                         coordinate={coordinate} 
                         piece={piece} 
                         setValidMoves={setValidMoves}
+                        board={board}
                     />
                 }
             </div>

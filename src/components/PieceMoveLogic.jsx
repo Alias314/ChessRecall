@@ -12,44 +12,41 @@ export function isValidPawnMove(from, to, piece, board) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
+    const rankDiff = coordinateTo[1] - coordinateFrom[1];
+    const destinationPiece = board[to];
+    const isCapturing = destinationPiece !== null;
 
     if (piece === 'pawn_w') {
-        if (coordinateFrom[1] === 2) {
-            if (!(coordinateTo[1] - coordinateFrom[1] === 1 || coordinateTo[1] - coordinateFrom[1] === 2)) {
-                return false;
-            }
-        }
-        else {
-            if (!(coordinateTo[1] - coordinateFrom[1] === 1)) {
-                return false;
-            }
+        if (fileDiff === 0 && rankDiff === 1 && destinationPiece === null) {
+            return true;
         }
 
+        if (coordinateFrom[1] === 2 && rankDiff === 2 && fileDiff === 0 && 
+            destinationPiece === null && board[from[0] + (coordinateFrom[1] + 1)] === null) {
+            return true;
+        }
+
+        if (fileDiff === 1 && rankDiff === 1 && isCapturing) {
+            return !isSameColor(to, piece, board);
+        }
     }
+    
     else if (piece === 'pawn_b') {
-        if (coordinateFrom[1] === 7) {
-            if (!(coordinateTo[1] - coordinateFrom[1] === -1 || coordinateTo[1] - coordinateFrom[1] === -2)) {
-                return false;
-            }
+        if (fileDiff === 0 && rankDiff === -1 && destinationPiece === null) {
+            return true;
         }
-        else {
-            if (!(coordinateTo[1] - coordinateFrom[1] === -1)) {
-                return false;
-            }
-        }
-    }
-    
-    if (fileDiff !== 0) {
-        return false;
-    }
-    
-    if (board[to] !== null) {
-        return false;
-    }
-    console.log(board[to]);
-    console.log(board[from]);
 
-    return !isSameColor(to, piece, board);
+        if (coordinateFrom[1] === 7 && rankDiff === -2 && fileDiff === 0 && 
+            destinationPiece === null && board[from[0] + (coordinateFrom[1] - 1)] === null) {
+            return true;
+        }
+
+        if (fileDiff === 1 && rankDiff === -1 && isCapturing) {
+            return !isSameColor(to, piece, board);
+        }
+    }
+
+    return false;
 }
 
 export function isValidRookMove(from, to, piece, board) {
