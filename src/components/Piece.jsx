@@ -14,22 +14,22 @@ export default function Piece({ coordinate, piece, setValidMoves, board }) {
 
     useEffect(() => {
         if (isDragging) {
-            if (piece.includes('pawn')) {
+            if (piece[0] === 'P') {
                 isValidPawnHighlight(coordinate, piece, setValidMoves, board);
             }
-            else if (piece.includes('rook')) {
-                isValidRookHighlight(coordinate, setValidMoves);
+            else if (piece[0] === 'R') {
+                isValidRookHighlight(coordinate, setValidMoves, board);
             }
-            else if (piece.includes('knight')) {
+            else if (piece[0] === 'N') {
                 isValidKnightHighlight(coordinate, setValidMoves);
             }
-            else if (piece.includes('bishop')) {
-                isValidBishopHighlight(coordinate, setValidMoves);
+            else if (piece[0] === 'B') {
+                isValidBishopHighlight(coordinate, setValidMoves, board);
             }
-            else if (piece.includes('queen')) {
-                isValidQueenHighlight(coordinate, setValidMoves);
+            else if (piece[0] === 'Q') {
+                isValidQueenHighlight(coordinate, setValidMoves, board);
             }
-            else if (piece.includes('king')) {
+            else if (piece[0] === 'K') {
                 isValidKingHighlight(coordinate, setValidMoves);
             }
         }

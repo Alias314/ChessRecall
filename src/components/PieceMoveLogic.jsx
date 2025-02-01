@@ -8,6 +8,87 @@ const isSameColor = (to, piece, board) => {
     return toPieceColor === fromPieceColor;
 }
 
+const checkRookPath = (coordinateFrom, coordinateTo, board) => {
+    const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
+    const rankDiff = Math.abs(coordinateTo[1] - coordinateFrom[1]);
+    const fileDirection = (coordinateTo[1] - coordinateFrom[1] > 0) ? 1 : 0;
+    const rankDirection = (coordinateTo[0] - coordinateFrom[0] > 0) ? 1 : 0;
+
+    if (fileDiff === 0) {
+        if (fileDirection) {
+            for (let i = 1; i <= rankDiff; i++) {
+                if (board[`${String.fromCharCode(coordinateFrom[0] + 96)}${coordinateFrom[1] + i}`] !== null) {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (let i = 1; i <= rankDiff; i++) {
+                if (board[`${String.fromCharCode(coordinateFrom[0] + 96)}${coordinateFrom[1] - i}`] !== null) {
+                    return false;
+                }
+            }
+        }
+    }
+    else if (rankDiff === 0) {
+        if (rankDirection) {
+            for (let i = 1; i < fileDiff; i++) {
+                if (board[`${String.fromCharCode(coordinateFrom[0] + 96 + i)}${coordinateFrom[1]}`] !== null) {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (let i = 1; i < fileDiff; i++) {
+                if (board[`${String.fromCharCode(coordinateFrom[0] + 96 - i)}${coordinateFrom[1]}`] !== null) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+const checkBishopPath = (coordinateFrom, coordinateTo, board) => {
+    const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
+    const rankDiff = Math.abs(coordinateTo[1] - coordinateFrom[1]);
+    const fileDirection = (coordinateTo[0] - coordinateFrom[0] > 0) ? 1 : 0;
+    const rankDirection = (coordinateTo[1] - coordinateFrom[1] > 0) ? 1 : 0;
+
+    if (fileDirection && rankDirection) {
+        for (let i = 1; i <= fileDiff; i++) {
+            if (board[`${String.fromCharCode(coordinateFrom[0] + 96 + i)}${coordinateFrom[1] + i}`] !== null) {
+                console.log(board[`${String.fromCharCode(coordinateFrom[0] + 96 + i)}${coordinateFrom[1] + i}`]);
+                return false;
+            }
+        }
+    }
+    else if (fileDirection && !rankDirection) {
+        for (let i = 1; i <= fileDiff; i++) {
+            if (board[`${String.fromCharCode(coordinateFrom[0] + 96 + i)}${coordinateFrom[1] - i}`] !== null) {
+                return false;
+            }
+        }
+    }
+    else if (!fileDirection && rankDirection) {
+        for (let i = 1; i <= fileDiff; i++) {
+            if (board[`${String.fromCharCode(coordinateFrom[0] + 96 - i)}${coordinateFrom[1] + i}`] !== null) {
+                return false;
+            }
+        }
+    }
+    else if (!fileDirection && !rankDirection) {
+        for (let i = 1; i <= fileDiff; i++) {
+            if (board[`${String.fromCharCode(coordinateFrom[0] + 96 - i)}${coordinateFrom[1] - i}`] !== null) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 export function isValidPawnMove(from, to, piece, board) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
@@ -16,7 +97,7 @@ export function isValidPawnMove(from, to, piece, board) {
     const destinationPiece = board[to];
     const isCapturing = destinationPiece !== null;
 
-    if (piece === 'pawn_w') {
+    if (piece === 'Pw') {
         if (fileDiff === 0 && rankDiff === 1 && destinationPiece === null) {
             return true;
         }
@@ -31,7 +112,7 @@ export function isValidPawnMove(from, to, piece, board) {
         }
     }
     
-    else if (piece === 'pawn_b') {
+    else if (piece === 'Pb') {
         if (fileDiff === 0 && rankDiff === -1 && destinationPiece === null) {
             return true;
         }
@@ -56,6 +137,23 @@ export function isValidRookMove(from, to, piece, board) {
     const rankDiff = Math.abs(coordinateTo[1] - coordinateFrom[1]);
 
     if (!(fileDiff === 0 || rankDiff === 0)) {
+        return false;
+    }
+
+    const toPiece = board[to];
+    const isValidCapture = toPiece && !isSameColor(to, piece, board);
+
+    if (isValidCapture) {
+        board[to] = null;
+    } 
+
+    const isPathClear = checkRookPath(coordinateFrom, coordinateTo, board);
+
+    if (isValidCapture) {
+        board[to] = toPiece;
+    }
+
+    if (!isPathClear) {
         return false;
     }
 
@@ -85,10 +183,32 @@ export function isValidBishopMove(from, to, piece, board) {
         return false;
     }
 
+    const toPiece = board[to];
+    const isValidCapture = toPiece && !isSameColor(to, piece, board);
+
+    if (isValidCapture) {
+        board[to] = null;
+    }
+
+    const isPathClear = checkBishopPath(coordinateFrom, coordinateTo, board);
+
+    if (isValidCapture) {
+        board[to] = toPiece;
+    }
+
+    if (!isPathClear) {
+        return false;
+    }
+
     return !isSameColor(to, piece, board);
 }
 
 export function isValidQueenMove(from, to, piece, board) {
+    if (isSameColor(to, piece, board)) {
+        console.log('test');
+        return false
+    }
+
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
@@ -97,8 +217,32 @@ export function isValidQueenMove(from, to, piece, board) {
     if (!((fileDiff === 0 || rankDiff === 0) || (fileDiff === rankDiff))) {
         return false;
     }
+    
+    const toPiece = board[to];
+    const isValidCapture = toPiece && !isSameColor(to, piece, board);
 
-    return !isSameColor(to, piece, board);
+    if (isValidCapture) {
+        board[to] = null;
+    }
+
+    let isPathClear = null;
+
+    if ((fileDiff === 0 || rankDiff === 0)) {
+        isPathClear = checkRookPath(coordinateFrom, coordinateTo, board);
+    }
+    else if (fileDiff === rankDiff) {
+        isPathClear = checkBishopPath(coordinateFrom, coordinateTo, board);
+    }
+    
+    if (isValidCapture) {
+        board[to] = toPiece;
+    }
+
+    if (!isPathClear) {
+        return false;
+    }
+
+    return true;
 }
 
 export function isValidKingMove(from, to, piece, board) {

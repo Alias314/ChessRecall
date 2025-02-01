@@ -5,7 +5,7 @@ export default function Square({ coordinate, isDarkSquare, piece, movePiece, set
     const [{ isDropping }, drop] = useDrop(() => ({
         accept: 'Piece',
         drop: (item) => movePiece(item.from, coordinate, item.piece),
-    }), [piece]);
+    }), [piece, movePiece, coordinate]);
     
     return (
         <div
@@ -19,9 +19,9 @@ export default function Square({ coordinate, isDarkSquare, piece, movePiece, set
             <div className="absolute bottom-0 right-1">
                 {coordinate[1] === '1' && coordinate[0]}
             </div>
-            <div className="absolute text-6xl font-light z-10">
-                {isHighlighted && 'O'}
-            </div>
+            { isHighlighted &&
+                <div className="w-6 h-6 absolute bg-black rounded-full opacity-20"></div>
+            }
             <div className="z-20">
                 {
                     piece &&

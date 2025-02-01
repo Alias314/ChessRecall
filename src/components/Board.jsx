@@ -9,40 +9,37 @@ export default function Board() {
     const [displayCoordinate, setDisplayCoordinate] = useState(false);
     const [draggingPiece, setDraggingPiece] = useState([]);
     const [validMoves, setValidMoves] = useState([]);
+    const [displayMoveHistroy, setDisplayMoveHistory] = useState(true);
+    const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
     const movePiece = (from, to, piece) => {
-        if (piece.includes('pawn')) {
-            if (!isValidPawnMove(from, to, piece, board)) {
-                return;
-            }
+        const currentTurnColor = isWhiteTurn ? 'w' : 'b';
+        
+        if (piece[1] !== currentTurnColor) {
+            return;
         }
-        else if (piece.includes('rook')) {
-            if (!isValidRookMove(from, to, piece, board)) {
-                return;
-            }
+        
+        if (piece[0] === 'P' && !isValidPawnMove(from, to, piece, board)) {
+            return;
         }
-        else if (piece.includes('knight')) {
-            if (!isValidKnightMove(from, to, piece, board)) {
-                return;
-            }
+        else if (piece[0] === 'R' && !isValidRookMove(from, to, piece, board)) {
+            return;
         }
-        else if (piece.includes('bishop')) {
-            if (!isValidBishopMove(from, to, piece, board)) {
-                return;
-            }
+        else if (piece[0] === 'N' && !isValidKnightMove(from, to, piece, board)) {
+            return;
         }
-        else if (piece.includes('queen')) {
-            if (!isValidQueenMove(from, to, piece, board)) {
-                return;
-            }
+        else if (piece[0] === 'B' && !isValidBishopMove(from, to, piece, board)) {
+            return;
         }
-        else if (piece.includes('king')) {
-            if (!isValidKingMove(from, to, piece, board)) {
-                return;
-            }
+        else if (piece[0] === 'Q' && !isValidQueenMove(from, to, piece, board)) {
+            return;
         }
-
-        setMoveHistory(prevMoveHistory => [ ...prevMoveHistory, `${piece[0].toUpperCase()}${to}`])
+        else if (piece[0] === 'K' && !isValidKingMove(from, to, piece, board)) {
+            return;
+        }
+        
+        setIsWhiteTurn(!isWhiteTurn);
+        setMoveHistory(prevMoveHistory => [ ...prevMoveHistory, `${piece[0] !== 'P' ? piece[0] : ''}${to}`]);
         setBoard(prevBoard => {
             const nextBoard = { ...prevBoard };
             nextBoard[to] = nextBoard[from];
@@ -55,8 +52,8 @@ export default function Board() {
         setBoard(initialBoard);
     }
 
-    const logBoardState = () => {
-        console.log(board);
+    const showMoveHistory = () => {
+        setDisplayMoveHistory(!displayMoveHistroy);
     }
 
     return (
@@ -85,18 +82,25 @@ export default function Board() {
                         })
                     )}
                 </div>
-                <div className="flex flex-col">
-                    <h1 className="text-2xl">Move History</h1>
-                    <div className="grid grid-cols-2 gap-2">
-                        {moveHistory.map(move => {
-                            return (
-                                <div>
-                                    {move}
-                                </div>
-                            )
-                        })}
+                { displayMoveHistroy &&
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl">Move History</h1>
+                        <div className="grid grid-cols-2 gap-2">
+                            {moveHistory.map((move, index) => {
+                                const moveNumber = Math.ceil((index + 1) / 2)
+                                
+                                return (
+                                    <div
+                                        key={index}
+                                    >
+                                        {index % 2 === 0 && `${moveNumber}. `}
+                                        {move}
+                                    </div>
+                                )
+                            })}
+                        </div>
                     </div>
-                </div>
+                }
             </div>
             <button
                 onClick={resetBoard}
@@ -105,10 +109,10 @@ export default function Board() {
                 Reset Board
             </button>
             <button
-                onClick={logBoardState}
+                onClick={showMoveHistory}
                 className="ml-2 mt-2 p-2 text-white font-semibold bg-blue-500 rounded-xl cursor-pointer"
             >
-                Log Board State
+                {displayMoveHistroy ? 'Hide Move History' : 'Show Move History'}
             </button>
         </div>
     );
