@@ -1,6 +1,6 @@
 # ChessRecall
 
-ChessRecall is a Chess opening trainer website that uses spaced repitition to enforce the opening moves to its users.
+ChessRecall is a Chess opening trainer website that uses spaced repitition to enforce opening moves.
 
 ## Technologies Used
 
