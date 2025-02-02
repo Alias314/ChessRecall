@@ -1,8 +1,24 @@
-# React + Vite
+# ChessRecall
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChessRecall is a Chess opening trainer website that uses spaced repitition to enforce opening moves.
 
-Currently, two official plugins are available:
+## Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React**
+- **Tailwind**
+- **Vite**
+
+---
+
+## Installation
+
+```bash
+# Clone the repository
+https://github.com/Alias314/ChessRecall.git
+cd ChessRecall
+
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
