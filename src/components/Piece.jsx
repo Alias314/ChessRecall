@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDrag } from "react-dnd";
 import { isValidPawnHighlight, isValidRookHighlight, isValidKnightHighlight, isValidBishopHighlight, isValidQueenHighlight, isValidKingHighlight } from "./CheckValidHighlight";
 
-export default function Piece({ coordinate, piece, setValidMoves, board }) {
+export default function Piece({ coordinate, piece, setValidMoves, board, lastMove }) {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'Piece',
         item: { from: coordinate, piece },
@@ -15,7 +15,7 @@ export default function Piece({ coordinate, piece, setValidMoves, board }) {
     useEffect(() => {
         if (isDragging) {
             if (piece[0] === 'P') {
-                isValidPawnHighlight(coordinate, piece, setValidMoves, board);
+                isValidPawnHighlight(coordinate, piece, setValidMoves, board, lastMove);
             }
             else if (piece[0] === 'R') {
                 isValidRookHighlight(coordinate, setValidMoves, board);

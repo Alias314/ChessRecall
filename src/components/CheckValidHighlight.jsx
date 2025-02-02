@@ -92,7 +92,7 @@ const checkBishopPath = (coordinateFrom, coordinateTo, board) => {
     return true;
 }
 
-export function isValidPawnHighlight(from, piece, setValidMoves, board) {
+export function isValidPawnHighlight(from, piece, setValidMoves, board, lastMove) {
     {ranks.map((rank, i) =>
         files.map((file, j) => {
             const to = file + rank;
@@ -136,6 +136,29 @@ export function isValidPawnHighlight(from, piece, setValidMoves, board) {
                 if (fileDiff === 1 && rankDiff === -1 && isCapturing) {
                     if (!isSameColor(to, piece, board)) {
                         setValidMoves(prevValidMoves => [ ...prevValidMoves, to ]);
+                    }
+                }
+            }
+
+            if (lastMove !== null) {
+                const lastMoveFrom = [fileToInteger(lastMove[0][0]), rankToInteger(lastMove[0][1])];
+                const lastMoveTo = [fileToInteger(lastMove[1][0]), rankToInteger(lastMove[1][1])];
+                const lastMoveFileDiff = lastMoveTo[0] - lastMoveFrom[0];
+                const lastMoveRankDiff = lastMoveTo[1] - lastMoveFrom[1];
+                const currentAndLastMoveFileDiff = Math.abs(lastMoveTo[0] - coordinateFrom[0]);
+        
+                if (lastMoveRankDiff === 2) {
+                    if (currentAndLastMoveFileDiff === 1) {
+                        if (coordinateTo[0] === lastMoveFrom[0] && coordinateTo[1] === 3) {
+                            setValidMoves(prevValidMoves => [ ...prevValidMoves, to ]);
+                        }
+                    }
+                }
+                else if (lastMoveRankDiff === -2) {
+                    if (currentAndLastMoveFileDiff === 1) {
+                        if (coordinateTo[0] === lastMoveFrom[0] && coordinateTo[1] === 6) {
+                            setValidMoves(prevValidMoves => [ ...prevValidMoves, to ]); 
+                        }
                     }
                 }
             }

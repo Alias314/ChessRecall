@@ -89,7 +89,7 @@ const checkBishopPath = (coordinateFrom, coordinateTo, board) => {
     return true;
 }
 
-export function isValidPawnMove(from, to, piece, board) {
+export function isValidPawnMove(from, to, piece, board, lastMove, setIsEnPassantBlack, setIsEnPassantWhite) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
@@ -101,29 +101,52 @@ export function isValidPawnMove(from, to, piece, board) {
         if (fileDiff === 0 && rankDiff === 1 && destinationPiece === null) {
             return true;
         }
-
+        
         if (coordinateFrom[1] === 2 && rankDiff === 2 && fileDiff === 0 && 
             destinationPiece === null && board[from[0] + (coordinateFrom[1] + 1)] === null) {
-            return true;
-        }
-
+                return true;
+            }
+            
         if (fileDiff === 1 && rankDiff === 1 && isCapturing) {
             return !isSameColor(to, piece, board);
         }
     }
-    
     else if (piece === 'Pb') {
         if (fileDiff === 0 && rankDiff === -1 && destinationPiece === null) {
             return true;
         }
-
+        
         if (coordinateFrom[1] === 7 && rankDiff === -2 && fileDiff === 0 && 
             destinationPiece === null && board[from[0] + (coordinateFrom[1] - 1)] === null) {
             return true;
         }
-
+            
         if (fileDiff === 1 && rankDiff === -1 && isCapturing) {
             return !isSameColor(to, piece, board);
+        }
+
+    }
+
+    if (lastMove !== null) {
+        const lastMoveFrom = [fileToInteger(lastMove[0][0]), rankToInteger(lastMove[0][1])];
+        const lastMoveTo = [fileToInteger(lastMove[1][0]), rankToInteger(lastMove[1][1])];
+        const lastMoveFileDiff = lastMoveTo[0] - lastMoveFrom[0];
+        const lastMoveRankDiff = lastMoveTo[1] - lastMoveFrom[1];
+        const currentAndLastMoveFileDiff = Math.abs(lastMoveTo[0] - coordinateFrom[0]);
+
+        if (lastMoveRankDiff === 2) {
+            if (currentAndLastMoveFileDiff === 1) {
+                if (coordinateTo[0] === lastMoveFrom[0] && coordinateTo[1] === 3) {
+                    return true;
+                }
+            }
+        }
+        else if (lastMoveRankDiff === -2) {
+            if (currentAndLastMoveFileDiff === 1) {
+                if (coordinateTo[0] === lastMoveFrom[0] && coordinateTo[1] === 6) {
+                    return true;
+                }
+            }
         }
     }
 
