@@ -6,7 +6,6 @@ ChessRecall is a Chess opening trainer website that uses spaced repitition to en
 
 - **React**
 - **Tailwind**
-- **JavaScript**
 - **Vite**
 
 ---
