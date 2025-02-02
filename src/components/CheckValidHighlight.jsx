@@ -257,7 +257,7 @@ export function isValidQueenHighlight(from, setValidMoves, board) {
     )}
 }
 
-export function isValidKingHighlight(from, setValidMoves) {
+export function isValidKingHighlight(from, setValidMoves, board, hasWhiteKingMoved, hasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved, piece) {
     {ranks.map((rank, i) =>
         files.map((file, j) => {
             const to = file + rank;
@@ -265,6 +265,27 @@ export function isValidKingHighlight(from, setValidMoves) {
             const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
             const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
             const rankDiff = Math.abs(coordinateTo[1] - coordinateFrom[1]);
+
+            if (((from === 'e1' && to === 'g1' && !hasWhiteKingRookMoved) ||
+                (from === 'e1' && to === 'c1' && board['b1'] === null && !hasWhiteQueenRookMoved)) &&
+                (!hasWhiteKingMoved)) {
+                if (checkRookPath(coordinateFrom, coordinateTo, board)) {
+                    if (!isSameColor(to, piece, board)) {
+                        setValidMoves(prevValidMoves => [ ...prevValidMoves, to ]);
+                        return false;
+                    }
+                }
+            }
+            else if (((from === 'e8' && to === 'g8' && !hasBlackKingRookMoved) ||
+                    (from === 'e8' && to === 'c8' && board['b8'] === null && !hasBlackQueenRookMoved)) &&
+                    (!hasBlackKingMoved)) {
+                if (checkRookPath(coordinateFrom, coordinateTo, board)) {
+                    if (!isSameColor(to, piece, board)) {
+                        setValidMoves(prevValidMoves => [ ...prevValidMoves, to ]);
+                        return false;
+                    }
+                }
+            }
 
             if (!((fileDiff === 0 && rankDiff === 1) || 
                   (fileDiff === 1 && rankDiff === 0) ||

@@ -15,6 +15,12 @@ export default function Board() {
     const [displayMoveHistroy, setDisplayMoveHistory] = useState(false);
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
     const [lastMove, setLastMove] = useState(null);
+    const [hasWhiteKingMoved, setHasWhiteKingMoved] = useState(false);
+    const [hasBlackKingMoved, setHasBlackKingMoved] = useState(false);
+    const [hasWhiteQueenRookMoved, setHasWhiteQueenRookMoved] = useState(false);
+    const [hasWhiteKingRookMoved, setHasWhiteKingRookMoved] = useState(false);
+    const [hasBlackQueenRookMoved, setHasBlackQueenRookMoved] = useState(false);
+    const [hasBlackKingRookMoved, setHasBlackKingRookMoved] = useState(false);
 
     const movePiece = (from, to, piece) => {
         const currentTurnColor = isWhiteTurn ? 'w' : 'b';
@@ -22,9 +28,11 @@ export default function Board() {
         const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
         const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
         let isEnPassant = false;
+        let isShortCastle = false;
+        let isLongCastle = false;
         
         if (piece[1] !== currentTurnColor) {
-            // return;
+            return;
         }
         
         if (piece[0] === 'P' && isValidPawnMove(from, to, piece, board, lastMove)) {
@@ -34,11 +42,11 @@ export default function Board() {
                 isEnPassant = true;
             }
         }
-        else {
+        else if (piece[0] === 'P' && !isValidPawnMove(from, to, piece, board, lastMove)) {
             return;
         }
 
-        if (piece[0] === 'R' && !isValidRookMove(from, to, piece, board)) {
+        if (piece[0] === 'R' && !isValidRookMove(from, to, piece, board, setHasWhiteKingRookMoved, setHasWhiteQueenRookMoved, setHasBlackKingRookMoved, setHasBlackQueenRookMoved)) {
             return;
         }
         else if (piece[0] === 'N' && !isValidKnightMove(from, to, piece, board)) {
@@ -50,21 +58,55 @@ export default function Board() {
         else if (piece[0] === 'Q' && !isValidQueenMove(from, to, piece, board)) {
             return;
         }
-        else if (piece[0] === 'K' && !isValidKingMove(from, to, piece, board)) {
+        
+        if (piece[0] === 'K' && isValidKingMove(from, to, piece, board, hasWhiteKingMoved, hasBlackKingMoved, setHasWhiteKingMoved, setHasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved)) {
+            if ((from === 'e1' && to === 'g1') ||
+                (from === 'e8' && to === 'g8')) {
+                isShortCastle = true;
+            }
+            else if ((from === 'e1' && to === 'c1') ||
+                     (from === 'e8' && to === 'c8')) {
+                isLongCastle = true;
+            }
+        }
+        else if (piece[0] === 'K' && !isValidKingMove(from, to, piece, board, hasWhiteKingMoved, hasBlackKingMoved, setHasWhiteKingMoved, setHasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved)) {
             return;
         }
         
         setLastMove(nextLastMove);
-        console.log(lastMove);
 
         setIsWhiteTurn(!isWhiteTurn);
         setMoveHistory(prevMoveHistory => [ ...prevMoveHistory, `${piece[0] !== 'P' ? piece[0] : ''}${to}`]);
+
         setBoard(prevBoard => {
             const nextBoard = { ...prevBoard };
 
             if (isEnPassant) {
                 const capturedPawnSquare = piece === 'Pw' ? to[0] + (rankToInteger(to[1]) - 1) : to[0] + (rankToInteger(to[1]) + 1);
                 nextBoard[capturedPawnSquare] = null;
+            }
+
+            if (isShortCastle) {
+                if (piece[1] === 'w') {
+                    nextBoard['f1'] = nextBoard['h1'];
+                    nextBoard['h1'] = null;
+                }
+                else if (piece[1] === 'b') {
+                    nextBoard['f8'] = nextBoard['h8'];
+                    nextBoard['h8'] = null;
+                }
+            }
+
+            if (isLongCastle) {
+                if (piece[1] === 'w') {
+                    nextBoard['d1'] = nextBoard['a1'];
+                    nextBoard['a1'] = null;
+                }
+                else if (piece[1] === 'b') {
+                    nextBoard['d8'] = nextBoard['a8'];    
+                    nextBoard['a8'] = null;
+                }
+                
             }
 
             nextBoard[to] = nextBoard[from];

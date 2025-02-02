@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDrag } from "react-dnd";
 import { isValidPawnHighlight, isValidRookHighlight, isValidKnightHighlight, isValidBishopHighlight, isValidQueenHighlight, isValidKingHighlight } from "./CheckValidHighlight";
 
-export default function Piece({ coordinate, piece, setValidMoves, board, lastMove }) {
+export default function Piece({ coordinate, piece, setValidMoves, board, lastMove, hasWhiteKingMoved, hasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved }) {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'Piece',
         item: { from: coordinate, piece },
@@ -30,7 +30,7 @@ export default function Piece({ coordinate, piece, setValidMoves, board, lastMov
                 isValidQueenHighlight(coordinate, setValidMoves, board);
             }
             else if (piece[0] === 'K') {
-                isValidKingHighlight(coordinate, setValidMoves);
+                isValidKingHighlight(coordinate, setValidMoves, board, hasWhiteKingMoved, hasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved, piece);
             }
         }
         else {

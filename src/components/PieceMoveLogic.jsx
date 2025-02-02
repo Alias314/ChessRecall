@@ -153,7 +153,7 @@ export function isValidPawnMove(from, to, piece, board, lastMove, setIsEnPassant
     return false;
 }
 
-export function isValidRookMove(from, to, piece, board) {
+export function isValidRookMove(from, to, piece, board, setHasWhiteKingRookMoved, setHasWhiteQueenRookMoved, setHasBlackKingRookMoved, setHasBlackQueenRookMoved) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
@@ -178,6 +178,19 @@ export function isValidRookMove(from, to, piece, board) {
 
     if (!isPathClear) {
         return false;
+    }
+
+    if (from === 'a1') {
+        setHasWhiteQueenRookMoved(true);
+    }
+    else if (from === 'h1') {
+        setHasWhiteKingRookMoved(true);
+    }
+    else if (from === 'a8') {
+        setHasBlackQueenRookMoved(true);
+    }
+    else if (from === 'h8') {
+        setHasBlackKingRookMoved(true);
     }
 
     return !isSameColor(to, piece, board);
@@ -268,17 +281,41 @@ export function isValidQueenMove(from, to, piece, board) {
     return true;
 }
 
-export function isValidKingMove(from, to, piece, board) {
+export function isValidKingMove(from, to, piece, board, hasWhiteKingMoved, hasBlackKingMoved, setHasWhiteKingMoved, setHasBlackKingMoved, hasWhiteKingRookMoved, hasWhiteQueenRookMoved, hasBlackKingRookMoved, hasBlackQueenRookMoved) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
     const rankDiff = Math.abs(coordinateTo[1] - coordinateFrom[1]);
 
-    if (!((fileDiff === 0 && rankDiff === 1) || 
+    if (((from === 'e1' && to === 'g1' && !hasWhiteKingRookMoved) ||
+        (from === 'e1' && to === 'c1' && board['b1'] === null && !hasWhiteQueenRookMoved)) &&
+        (!hasWhiteKingMoved)) {
+        if (checkRookPath(coordinateFrom, coordinateTo, board)) {
+            console.log('huh why it work');
+            return !isSameColor(to, piece, board);
+        }
+    }
+    else if (((from === 'e8' && to === 'g8' && !hasBlackKingRookMoved) ||
+             (from === 'e8' && to === 'c8' && board['b8'] === null && !hasBlackQueenRookMoved)) &&
+             (!hasBlackKingMoved)) {
+        if (checkRookPath(coordinateFrom, coordinateTo, board)) {
+            return !isSameColor(to, piece, board);
+        }
+    }
+
+    if (!((fileDiff === 0 && rankDiff === 1) ||
           (fileDiff === 1 && rankDiff === 0) ||
           (fileDiff === 1 && rankDiff === 1))) {
         return false;
     }
 
+    if (!isSameColor(to, piece, board) && piece[1] === 'w') {
+        setHasWhiteKingMoved(true);
+    }
+    else if (!isSameColor(to, piece, board) && piece[1] === 'b') {
+        setHasBlackKingMoved(true);
+    }
+
+    console.log('here');
     return !isSameColor(to, piece, board);
 }
