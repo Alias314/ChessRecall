@@ -9,8 +9,6 @@ const rankToInteger = (rank) => parseInt(rank, 10);
 export default function Board() {
     const [board, setBoard] = useState(initialBoard);
     const [moveHistory, setMoveHistory] = useState([]);
-    const [displayCoordinate, setDisplayCoordinate] = useState(false);
-    const [draggingPiece, setDraggingPiece] = useState([]);
     const [validMoves, setValidMoves] = useState([]);
     const [displayMoveHistroy, setDisplayMoveHistory] = useState(false);
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
@@ -32,7 +30,7 @@ export default function Board() {
         let isLongCastle = false;
         
         if (piece[1] !== currentTurnColor) {
-            return;
+            // return;
         }
         
         if (piece[0] === 'P' && isValidPawnMove(from, to, piece, board, lastMove)) {
@@ -106,7 +104,6 @@ export default function Board() {
                     nextBoard['d8'] = nextBoard['a8'];    
                     nextBoard['a8'] = null;
                 }
-                
             }
 
             nextBoard[to] = nextBoard[from];

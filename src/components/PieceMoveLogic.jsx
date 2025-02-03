@@ -1,3 +1,5 @@
+import { ranks, files } from "./chessData";
+
 const fileToInteger = (file) => file.charCodeAt(0) - 96;
 const rankToInteger = (rank) => parseInt(rank, 10);
 
@@ -89,7 +91,41 @@ const checkBishopPath = (coordinateFrom, coordinateTo, board) => {
     return true;
 }
 
-export function isValidPawnMove(from, to, piece, board, lastMove, setIsEnPassantBlack, setIsEnPassantWhite) {
+const checkIfCheck = (to, piece, board) => {    
+    const isInCheck = ranks.some(rank =>
+      files.some(file => {
+        const currentCoordinate = file + rank;
+        const currentPiece = board[currentCoordinate];
+
+        if (!currentPiece || currentPiece[1] === piece[1]) {
+          return false;
+        }
+
+        if (currentPiece[0] === 'K') {
+            
+        }
+ 
+        if (currentPiece[0] === 'R' && isValidRookMove(currentCoordinate, to, currentPiece, board)) {
+          return true;
+        }
+        if (currentPiece[0] === 'N' && isValidKnightMove(currentCoordinate, to, currentPiece, board)) {
+          return true;
+        }
+        if (currentPiece[0] === 'B' && isValidBishopMove(currentCoordinate, to, currentPiece, board)) {
+          return true;
+        }
+        if (currentPiece[0] === 'Q' && isValidQueenMove(currentCoordinate, to, currentPiece, board)) {
+          return true;
+        }
+  
+        return false;
+      })
+    );
+    
+    return !isInCheck;
+}
+  
+export function isValidPawnMove(from, to, piece, board, lastMove) {
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
@@ -154,6 +190,10 @@ export function isValidPawnMove(from, to, piece, board, lastMove, setIsEnPassant
 }
 
 export function isValidRookMove(from, to, piece, board, setHasWhiteKingRookMoved, setHasWhiteQueenRookMoved, setHasBlackKingRookMoved, setHasBlackQueenRookMoved) {
+    if (from === to) {
+        return false;
+    }
+    
     const coordinateFrom = [fileToInteger(from[0]), rankToInteger(from[1])];
     const coordinateTo = [fileToInteger(to[0]), rankToInteger(to[1])];
     const fileDiff = Math.abs(coordinateTo[0] - coordinateFrom[0]);
@@ -309,6 +349,10 @@ export function isValidKingMove(from, to, piece, board, hasWhiteKingMoved, hasBl
         return false;
     }
 
+    if (!checkIfCheck(to, piece, board)) {
+        return;
+    }
+
     if (!isSameColor(to, piece, board) && piece[1] === 'w') {
         setHasWhiteKingMoved(true);
     }
@@ -316,6 +360,5 @@ export function isValidKingMove(from, to, piece, board, hasWhiteKingMoved, hasBl
         setHasBlackKingMoved(true);
     }
 
-    console.log('here');
     return !isSameColor(to, piece, board);
 }
